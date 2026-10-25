@@ -18,10 +18,10 @@ test('processTriggers logs ship time change to whole-hour offset', async () => {
 
   await processTriggers(
     'environment.time.timezoneOffset',
-    1300,
+    46800,
     {
       'navigation.datetime': '2026-07-05T12:00:00.000Z',
-      'environment.time.timezoneOffset': 1200,
+      'environment.time.timezoneOffset': 43200,
     },
     log,
     appHarness(),
@@ -42,10 +42,10 @@ test('processTriggers logs negative half-hour offset', async () => {
 
   await processTriggers(
     'environment.time.timezoneOffset',
-    -930,
+    -34200,
     {
       'navigation.datetime': '2026-07-05T12:00:00.000Z',
-      'environment.time.timezoneOffset': -1000,
+      'environment.time.timezoneOffset': -36000,
     },
     log,
     appHarness(),
@@ -68,7 +68,7 @@ test('processTriggers logs change to UTC with zero offset', async () => {
     0,
     {
       'navigation.datetime': '2026-07-05T12:00:00.000Z',
-      'environment.time.timezoneOffset': 330,
+      'environment.time.timezoneOffset': 19800,
     },
     log,
     appHarness(),
@@ -88,10 +88,10 @@ test('processTriggers ignores unchanged timezone offset', async () => {
 
   await processTriggers(
     'environment.time.timezoneOffset',
-    1300,
+    46800,
     {
       'navigation.datetime': '2026-07-05T12:00:00.000Z',
-      'environment.time.timezoneOffset': 1300,
+      'environment.time.timezoneOffset': 46800,
     },
     log,
     appHarness(),
@@ -110,7 +110,7 @@ test('processTriggers ignores a NULL to value transition', async () => {
 
   await processTriggers(
     'environment.time.timezoneOffset',
-    1300,
+    46800,
     {
       'navigation.datetime': '2026-07-05T12:00:00.000Z',
       'environment.time.timezoneOffset': null,
@@ -139,7 +139,7 @@ test('processTriggers ignores a value re-arriving through NULL after restart', a
     null,
     {
       'navigation.datetime': '2026-07-05T12:00:00.000Z',
-      'environment.time.timezoneOffset': 1300,
+      'environment.time.timezoneOffset': 46800,
     },
     log,
     appHarness(),
@@ -148,7 +148,7 @@ test('processTriggers ignores a value re-arriving through NULL after restart', a
   // Same offset re-arriving with NULL as the stored previous value
   await processTriggers(
     'environment.time.timezoneOffset',
-    1300,
+    46800,
     {
       'navigation.datetime': '2026-07-05T12:00:00.000Z',
       'environment.time.timezoneOffset': null,
@@ -170,7 +170,7 @@ test('processTriggers logs again after NULL when the offset really changed', asy
 
   await processTriggers(
     'environment.time.timezoneOffset',
-    1200,
+    43200,
     {
       'navigation.datetime': '2026-07-05T12:00:00.000Z',
       'environment.time.timezoneOffset': null,
@@ -182,10 +182,10 @@ test('processTriggers logs again after NULL when the offset really changed', asy
 
   await processTriggers(
     'environment.time.timezoneOffset',
-    1300,
+    46800,
     {
       'navigation.datetime': '2026-07-05T12:00:00.000Z',
-      'environment.time.timezoneOffset': 1200,
+      'environment.time.timezoneOffset': 43200,
     },
     log,
     appHarness(),
@@ -205,7 +205,7 @@ test('processTriggers ignores the first received timezone offset', async () => {
 
   await processTriggers(
     'environment.time.timezoneOffset',
-    1300,
+    46800,
     {
       'navigation.datetime': '2026-07-05T12:00:00.000Z',
     },

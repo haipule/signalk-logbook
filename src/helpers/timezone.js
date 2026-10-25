@@ -7,19 +7,23 @@
 //   explicit Z
 // - 'ship': entries are shown in ship's time without a timezone
 //   specifier. Ship's time is the fixed offset published by
-//   signalk-ships-time at environment.time.timezoneOffset in the
-//   (-)hhmm encoding, e.g. 1300 → UTC+13.
+//   environment.time.timezoneOffset in seconds, e.g. 46800 → UTC+13.
 
 const { DateTime } = require('luxon');
 
-// Convert a (-)hhmm offset into a zero-padded fixed-offset zone string
-// understood by both luxon and Intl: 1300 → '+13:00', -930 → '-09:30'
-function offsetToZone(hhmm) {
-  const sign = hhmm < 0 ? '-' : '+';
-  const abs = Math.abs(hhmm);
-  const hours = String(Math.floor(abs / 100)).padStart(2, '0');
-  const minutes = String(abs % 100).padStart(2, '0');
-  return `${sign}${hours}:${minutes}`;
+// Convert an offset in seconds into a zero-padded Luxon fixed-offset zone
+// specifier: 46800 → 'UTC+13:00', -34200 → 'UTC-09:30'. Signal K offsets
+// have minute precision and valid civil time zones range from UTC-12 to
+// UTC+14, so reject values outside that range or between whole minutes.
+function offsetToZone(seconds) {
+  if (!Number.isFinite(seconds) || seconds % 60 !== 0 || Math.abs(seconds) > 14 * 60 * 60) {
+    return null;
+  }
+  const sign = seconds < 0 ? '-' : '+';
+  const totalMinutes = Math.abs(seconds) / 60;
+  const hours = String(Math.floor(totalMinutes / 60)).padStart(2, '0');
+  const minutes = String(totalMinutes % 60).padStart(2, '0');
+  return `UTC${sign}${hours}:${minutes}`;
 }
 
 // Resolve the displayTimeZone setting into a concrete zone string.
@@ -28,7 +32,7 @@ function offsetToZone(hhmm) {
 // back to UTC.
 function displayZone(setting, timezoneOffset) {
   if (setting === 'ship' && Number.isFinite(timezoneOffset)) {
-    return offsetToZone(timezoneOffset);
+    return offsetToZone(timezoneOffset) || 'UTC';
   }
   return 'UTC';
 }
@@ -47,8 +51,9 @@ function zoneLabel(zone) {
   if (!zone || zone === 'UTC') {
     return 'UTC';
   }
-  const sign = zone.startsWith('-') ? '-' : '+';
-  const [hours, minutes] = zone.replace(/^[+-]/, '').split(':');
+  const offset = zone.replace(/^UTC/, '');
+  const sign = offset.startsWith('-') ? '-' : '+';
+  const [hours, minutes] = offset.replace(/^[+-]/, '').split(':');
   return `UTC${sign}${parseInt(hours, 10)}${minutes === '00' ? '' : `:${minutes}`}`;
 }
 

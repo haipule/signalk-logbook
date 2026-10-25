@@ -95,7 +95,7 @@ test('filterWindow bounds quick ranges to local days', () => {
   // 2026-09-28 10:00Z is already 2026-09-28 23:00 in UTC+13, so the
   // last 2 days start at local midnight of 2026-09-27 (UTC 2026-09-26
   // 11:00) and run to the end of the local day
-  const window = filterWindow({ preset: '2d' }, new Date('2026-09-28T10:00:00.000Z'), '+13:00');
+  const window = filterWindow({ preset: '2d' }, new Date('2026-09-28T10:00:00.000Z'), 'UTC+13:00');
   assert.strictEqual(window.from, '2026-09-26T11:00:00.000Z');
   assert.strictEqual(window.to, '2026-09-28T10:59:59.999Z');
 });
@@ -116,7 +116,7 @@ test('filterWindow bounds custom ranges to whole local days', () => {
   const window = filterWindow(
     { from: '2026-04-01', to: '2026-04-03' },
     new Date('2026-09-28T10:00:00.000Z'),
-    '+05:30',
+    'UTC+05:30',
   );
   // Local midnight of 2026-04-01 is 2026-03-31 18:30Z; end of
   // 2026-04-03 is 2026-04-03 18:29:59.999Z
@@ -133,5 +133,13 @@ test('filterWindow falls back to the default window on invalid custom dates', ()
   assert.deepStrictEqual(
     filterWindow({ from: '2026-04-20', to: '2026-04-01' }, now, 'UTC'),
     filterWindow(DEFAULT_FILTER, now, 'UTC'),
+  );
+});
+
+test('filterWindow falls back to UTC instead of returning null bounds for an invalid zone', () => {
+  const now = new Date('2026-09-28T10:00:00.000Z');
+  assert.deepStrictEqual(
+    filterWindow({ preset: '7d' }, now, 'UTC-144:00'),
+    filterWindow({ preset: '7d' }, now, 'UTC'),
   );
 });

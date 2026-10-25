@@ -102,10 +102,12 @@ function filterLabel(filter) {
 // corrupt or half-written save) falls back to the default quick range
 // rather than yielding a query that cannot succeed
 function filterWindow(filter, now, zone) {
-  const nowDt = DateTime.fromJSDate(now).setZone(zone);
+  const requestedNow = DateTime.fromJSDate(now).setZone(zone);
+  const nowDt = requestedNow.isValid ? requestedNow : DateTime.fromJSDate(now).toUTC();
+  const resolvedZone = nowDt.zoneName;
   if (isCustomFilter(filter)) {
-    const from = DateTime.fromISO(filter.from, { zone }).startOf('day');
-    const to = DateTime.fromISO(filter.to, { zone }).endOf('day');
+    const from = DateTime.fromISO(filter.from, { zone: resolvedZone }).startOf('day');
+    const to = DateTime.fromISO(filter.to, { zone: resolvedZone }).endOf('day');
     if (from.isValid && to.isValid && from <= to) {
       return {
         from: from.toUTC().toISO(),

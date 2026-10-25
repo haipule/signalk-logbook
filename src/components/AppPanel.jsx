@@ -91,8 +91,8 @@ function AppPanel(props) {
   // unitpreferences API; rendering then falls back to nautical units.
   const [unitPrefs, setUnitPrefs] = useState(null);
   const [timezone, setTimezone] = useState('UTC');
-  // Ship's time offset from environment.time.timezoneOffset, published
-  // by signalk-ships-time in (-)hhmm encoding, e.g. 1300 → UTC+13
+  // Ship's time offset from environment.time.timezoneOffset, in seconds,
+  // e.g. 46800 → UTC+13
   const [timezoneOffset, setTimezoneOffset] = useState(null);
 
   const loginStatus = props.loginStatus.status;
